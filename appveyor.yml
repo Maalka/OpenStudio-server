@@ -33,4 +33,3 @@ on_failure:
 
 artifacts:
   - path: /e/openstudio-server-build
-      name: ossBuild
