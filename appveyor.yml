@@ -32,4 +32,4 @@ on_failure:
   - C:\projects\openstudio-server\ci\appveyor\print_logs.cmd
 
 artifacts:
-  - path: /e/openstudio-server-build
+  - path: /e/openstudio-server-build/*.tar.gz
