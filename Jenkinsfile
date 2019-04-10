@@ -18,7 +18,7 @@ pipeline {
     stage('You ready?') {
       steps {
         script {
-          if (env.BRANCH_NAME == 'master') {
+          if (env.BRANCH_NAME == 'v2.8.0-rc5-ami') {
             input 'Ready to build and deploy AMI?'
           } else {
             echo 'Unable to deploy when not on master'
@@ -29,7 +29,7 @@ pipeline {
     stage('Build AMI') {
       steps {
         script {
-          if (env.BRANCH_NAME == 'master') {
+          if (env.BRANCH_NAME == 'v2.8.0-rc5-ami') {
             withAWS(credentials: 'ec2NRELIS') {
                 sh 'pwd'
                 sh 'docker --version'
