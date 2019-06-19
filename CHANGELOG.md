@@ -1,6 +1,135 @@
 OpenStudio Server
 =================
 
+Version 2.8.1
+-------------
+
+Date Range 4/13/19 - 6/5/19
+
+* Update AWS Gem
+* Added support for pre-releases: both using pre-release versions of OpenStudio and publishing pre-release builds of OpenStudio Server
+* Updated handling of environment variables for OpenStudio CLI
+
+Accepted Pull Requests: 8
+- Fixed [#472]( https://github.com/NREL/OpenStudio-server/pull/472 ), add rstan and field to R
+- Fixed [#473]( https://github.com/NREL/OpenStudio-server/pull/473 ), set up CI to work w/pre-release OpenStudio packages by adding OPENSTUDIO_VERSION_EXT.
+- Fixed [#482]( https://github.com/NREL/OpenStudio-server/pull/482 ), Worker Init/Final Log on Datapoint
+- Fixed [#484]( https://github.com/NREL/OpenStudio-server/pull/484 ), Copyrights and Set Gem Version Update
+- Fixed [#485]( https://github.com/NREL/OpenStudio-server/pull/485 ), rubocop-rspec 1.32.0
+- Fixed [#487]( https://github.com/NREL/OpenStudio-server/pull/487 ), Prepare 2.8.1
+- Fixed [#488]( https://github.com/NREL/OpenStudio-server/pull/488 ), fix redis to 4.1.0 since 4.1.2 needs ruby 2.3.0
+- Fixed [#492]( https://github.com/NREL/OpenStudio-server/pull/492 ), 2.8.1-rc1
+
+Version 2.8.0
+-------------
+Date Range 11/17/18 - 4/12/19
+
+Closed Issues: 11
+- Fixed [#422]( https://github.com/NREL/OpenStudio-server/issues/422 ), Sobol method plots
+- Fixed [#425]( https://github.com/NREL/OpenStudio-server/issues/425 ), analysis marked "complete" before finalization scripts run
+- Fixed [#437]( https://github.com/NREL/OpenStudio-server/issues/437 ), cancel run does not work anymore
+- Fixed [#448]( https://github.com/NREL/OpenStudio-server/issues/448 ), New AWS YML configuration leads to rails & mongo throttling issues
+- Fixed [#461]( https://github.com/NREL/OpenStudio-server/issues/461 ), Timed out openstudio processes aren't terminating
+
+Accepted Pull Requests: 14
+- Fixed [#442]( https://github.com/NREL/OpenStudio-server/pull/442 ), add param to do out of bounds check for morris
+- Fixed [#443]( https://github.com/NREL/OpenStudio-server/pull/443 ), 2.7.1 unexpected return
+- Fixed [#447]( https://github.com/NREL/OpenStudio-server/pull/447 ), Hack into analysis status method to return "completed" only when fina…
+- Fixed [#450]( https://github.com/NREL/OpenStudio-server/pull/450 ), Dockertag
+- Fixed [#451]( https://github.com/NREL/OpenStudio-server/pull/451 ), change limits back to reservations in docker swarm config file
+- Fixed [#453]( https://github.com/NREL/OpenStudio-server/pull/453 ), support publishing custom docker image
+- Fixed [#454]( https://github.com/NREL/OpenStudio-server/pull/454 ), manage roo and bundler versions
+- Fixed [#462]( https://github.com/NREL/OpenStudio-server/pull/462 ), OpenStudio runs in a child of the spawned process. We need to kill bo…
+- Fixed [#463]( https://github.com/NREL/OpenStudio-server/pull/463 ), Fix cancel
+- Fixed [#465]( https://github.com/NREL/OpenStudio-server/pull/465 ), bump up timeouts until they can be made user selectable
+- Fixed [#466]( https://github.com/NREL/OpenStudio-server/pull/466 ), Code cleanup
+
+
+Version 2.7.1 
+-------------
+
+Date Range: 10/16/18 - 11/16/18:
+
+New Issues: 11 (#420, #421, #422, #424, #425, #429, #430, #432, #435, #437, #438)
+
+Closed Issues: 9
+- Fixed [#384]( https://github.com/NREL/OpenStudio-server/issues/384 ), logs from finalize and initialize scripts should be accessible via web dashboard
+- Fixed [#418]( https://github.com/NREL/OpenStudio-server/issues/418 ), Standardize calls to Oscli
+- Fixed [#420]( https://github.com/NREL/OpenStudio-server/issues/420 ), include oscli output with data point log
+- Fixed [#421]( https://github.com/NREL/OpenStudio-server/issues/421 ), Need to escape some characters in Oscli calls.
+- Fixed [#424]( https://github.com/NREL/OpenStudio-server/issues/424 ), run data point initialization script after worker_initialization
+- Fixed [#430]( https://github.com/NREL/OpenStudio-server/issues/430 ), Morris method can create points that dont satisfy boundary
+- Fixed [#435]( https://github.com/NREL/OpenStudio-server/issues/435 ), Incomplete datapoints are created causing server hang
+
+Accepted Pull Requests: 11
+- Fixed [#423]( https://github.com/NREL/OpenStudio-server/pull/423 ), Check if R libraries install correctly
+- Fixed [#426]( https://github.com/NREL/OpenStudio-server/pull/426 ), run data_point initialize scripts only once: at the end of initialize…
+- Fixed [#427]( https://github.com/NREL/OpenStudio-server/pull/427 ), Oscli output
+- Fixed [#428]( https://github.com/NREL/OpenStudio-server/pull/428 ), function to encapsulate the platform- and config- specific logic for Oscli calls
+- Fixed [#431]( https://github.com/NREL/OpenStudio-server/pull/431 ), add boundary checks to make sure solution space is within min/max
+- Fixed [#434]( https://github.com/NREL/OpenStudio-server/pull/434 ), Algorithm upgrade
+- Fixed [#436]( https://github.com/NREL/OpenStudio-server/pull/436 ), Restclient retry
+
+
+Version 2.7.0 
+-------------
+
+Date Range: 09/05/18 - 10/15/18:
+
+New Issues: 15 (#390, #391, #392, #394, #396, #397, #398, #399, #400, #403, #404, #405, #409, #411, #412)
+
+Closed Issues: 5
+- Fixed [#396]( https://github.com/NREL/OpenStudio-server/issues/396 ), print_logs.sh doesn't run on travis/ubuntu
+- Fixed [#398]( https://github.com/NREL/OpenStudio-server/issues/398 ), nokogiri error on travis (ubuntu/osx)
+- Fixed [#399]( https://github.com/NREL/OpenStudio-server/issues/399 ), supported platforms error on appveyor
+- Fixed [#403]( https://github.com/NREL/OpenStudio-server/issues/403 ), Appveyor VMs not failing when unable to discover openstudio.exe
+- Fixed [#405]( https://github.com/NREL/OpenStudio-server/issues/405 ), Ensuring openstudio.exe discovery process on Windows is reflected in Appveyor
+
+Accepted Pull Requests: 11
+
+- Fixed [#401]( https://github.com/NREL/OpenStudio-server/pull/401 ), Add require 'openstudio-standards' to measure
+- Fixed [#402]( https://github.com/NREL/OpenStudio-server/pull/402 ), remove sudo from install scripts for openstudio and ruby
+- Fixed [#410]( https://github.com/NREL/OpenStudio-server/pull/410 ), check OpenStudio Standards version via Oscli.
+- Fixed [#413]( https://github.com/NREL/OpenStudio-server/pull/413 ), control sassc version in Gemfile.
+
+Version 2.6.2
+-------------
+
+Major Changes: 
+- Models are run via the OpenStudio Command Line Interface rather than Workflow Gem.
+- OpenStudio gems (bundle) can be customized independent of OpenStudio Server bundle.  See [Wiki](https://github.com/NREL/OpenStudio-server/wiki/Gem-Bundle-used-by-OpenStudio) for additional details.
+- Analysis Initialize and Finalize Scripts can be run for Resque-based environments (ie not on local PAT). See [Wiki](https://github.com/NREL/OpenStudio-server/wiki/Analysis-Scripts) for additional details.
+- Datapoint Initialize and Finalize Scripts have been restructured and can be run on Resque-based environments. See [Wiki](https://github.com/NREL/OpenStudio-server/wiki/Data-Point-Scripts) for additional details.
+
+Date Range: 08/07/18 - 09/04/18:
+
+New Issues: 3 (#384, #386, #388)
+
+Closed Issues: 4
+- Fixed [#248]( https://github.com/NREL/OpenStudio-server/issues/248 ), Implement server & worker init & final scripts
+- Improved [#269]( https://github.com/NREL/OpenStudio-server/issues/269 ), Migrate to the openstudio CLI
+- Improved [#316]( https://github.com/NREL/OpenStudio-server/issues/316 ), Remove sourceforge build dependency
+- Fixed [#378]( https://github.com/NREL/OpenStudio-server/issues/378 ), Unable to run_single when seed value is set
+
+Accepted Pull Requests: 7
+- Fixed [#324]( https://github.com/NREL/OpenStudio-server/pull/324 ), OpenStudio CLI
+- Fixed [#381]( https://github.com/NREL/OpenStudio-server/pull/381 ), Bundle enablement for Oscli PR
+...
+
+Version 2.6.1
+-------------
+
+Date Range: 06/24/18 - 08/06/18:
+
+Closed Issues: 3
+- Fixed [#333]( https://github.com/NREL/OpenStudio-server/issues/333 ), audit, consolidate & upgrade docker compose files
+
+Accepted Pull Requests: 10
+- Fixed [#367]( https://github.com/NREL/OpenStudio-server/pull/367 ), Add version of openstudio to server admin page
+- Fixed [#368]( https://github.com/NREL/OpenStudio-server/pull/368 ), ignore gemfile and rvml
+- Fixed [#371]( https://github.com/NREL/OpenStudio-server/pull/371 ), add wait-for-it to ensure processes start  in the correct order
+- Fixed [#374]( https://github.com/NREL/OpenStudio-server/pull/374 ), replace reservations with limits except for AWS_MONGO_CORES and AWS_W…
+
 Version 2.6.0
 -------------
 

@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 require 'rails_helper'
 
 RSpec.describe AnalysisLibrary::Lhs, type: :model do
-  before :each do
+  before do
     # need to populate the database with an analysis and datapoints
 
     # delete all the analyses
@@ -49,7 +49,7 @@ RSpec.describe AnalysisLibrary::Lhs, type: :model do
     @statics = [{ s1: 'a' }, { s2: true }]
   end
 
-  it 'should have the right sizes' do
+  it 'has the right sizes' do
     expect(@pivots.size).to eq 2
     expect(@samples.size).to eq 3
     expect(@statics.size).to eq 2

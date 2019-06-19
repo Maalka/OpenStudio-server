@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -344,7 +344,7 @@ class InstallGems
     rake_bin = File.absolute_path('./../gems/bin/rake/')
     sys_cmds = []
 
-    sys_cmds << "#{$ruby_path} #{RbConfig::CONFIG['prefix']}/bin/gem install --no-env-shebang bundler -v 1.14.4"
+    sys_cmds << "#{$ruby_path} #{RbConfig::CONFIG['prefix']}/bin/gem install --no-env-shebang bundler -v 1.17.1"
     if /darwin/.match(RUBY_PLATFORM)
       sys_cmds << "#{$ruby_path} #{bundler_bin} config build.nokogiri --use-system-libraries --with-xml2-lib=/usr/lib --with-xml2-include=/usr/include"
     end
@@ -449,7 +449,9 @@ class StartLocal
       mongodir = File.dirname mongod
     end
 
-    options = {debug: false, force_directories: false, workers: 1, ruby_path: $ruby_path, mongo_dir: mongodir}
+    openstudio = which 'openstudio'
+
+    options = {debug: false, force_directories: false, workers: 1, ruby_path: $ruby_path, mongo_dir: mongodir, oscli: openstudio}
 
     opts = ::OptionParser.new do |o|
       o.banner = 'Usage: openstudio_meta start_local [options] PROJECT_DIR'
@@ -479,6 +481,10 @@ class StartLocal
 
       o.on('--energyplus-exe-path PATH', 'Location of the EnergyPlus executable') do |path|
         options[:energyplus_exe_path] = path
+      end
+
+      o.on('--openstudio-exe-path PATH', 'Location of the OpenStudio executable') do |path|
+        options[:openstudio_exe_path] = path
       end
     end
 
@@ -514,6 +520,14 @@ class StartLocal
 
     if options[:energyplus_exe_path] && ::File.exist?(options[:energyplus_exe_path])
       ::ENV['ENERGYPLUS_EXE_PATH'] = options[:energyplus_exe_path]
+    end
+
+    if options[:openstudio_exe_path] && ::File.exist?(options[:openstudio_exe_path])
+      ::ENV['OPENSTUDIO_EXE_PATH'] = options[:openstudio_exe_path]
+    elsif options[:oscli]
+      if ::File.exist?(options[:oscli])
+        ::ENV['OPENSTUDIO_EXE_PATH'] = options[:oscli]
+      end
     end
 
     # Set the server project path and temp dir
@@ -857,7 +871,9 @@ class RunRspec
       mongodir = File.dirname mongod
     end
 
-    options = {debug: false, force_directories: true, ruby_path: $ruby_path, mongo_dir: mongodir}
+    openstudio = which 'openstudio'
+
+    options = {debug: false, force_directories: true, ruby_path: $ruby_path, mongo_dir: mongodir, oscli: openstudio}
 
     opts = ::OptionParser.new do |o|
       o.banner = 'Usage: openstudio_meta run_rspec [options] TEST_DIR'
@@ -884,6 +900,10 @@ class RunRspec
       o.on('--energyplus-exe-path PATH', 'Location of the EnergyPlus executable') do |path|
         options[:energyplus_exe_path] = path
       end
+
+      o.on('--openstudio-exe-path PATH', 'Location of the OpenStudio executable') do |path|
+        options[:openstudio_exe_path] = path
+      end
     end
 
     # Parse the options
@@ -909,6 +929,15 @@ class RunRspec
     # Set the E+ path
     if options[:energyplus_exe_path] && ::File.exist?(options[:energyplus_exe_path])
       ::ENV['ENERGYPLUS_EXE_PATH'] = options[:energyplus_exe_path]
+    end
+
+    # Set the OSCLI path
+    if options[:openstudio_exe_path] && ::File.exist?(options[:openstudio_exe_path])
+      ::ENV['OPENSTUDIO_EXE_PATH'] = options[:openstudio_exe_path]
+    elsif options[:oscli]
+      if ::File.exist?(options[:oscli])
+        ::ENV['OPENSTUDIO_EXE_PATH'] = options[:oscli]
+      end
     end
 
     # Set the server project path and temp dir

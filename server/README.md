@@ -12,16 +12,17 @@ The worker pool can be either Delayed Jobs or Resque depending on the Rails envi
 delayed jobs queue is only for local and local-test environments. All other environments are 
 assuming Resque.
 
-There are 3 queues that need to be watched and are described below:
+There are 4 queues that need to be watched and are described below:
 
 * *Background*: These are background tasks that run on the web server volume in order to execute long running tasks in the background. The only task currently is deleting the analysis directory.
 * *Analyses*: This queues holds the analyses until all the simulations are complete.
 * *Simulations*: This queue is the simulation queue which runs the simulations on worker nodes.
+* *Analysis Finalization*: This queue runs analysis finalization scripts on the web_1 node.
  
 ### Delayed Jobs
 
 ```
-# Web Server
+# Background and Analysis Jobs
 bin/delayed_job -i server stop && bin/delayed_job -i server --queue=analyses,background start
 
 # Workers
@@ -38,9 +39,19 @@ bin/delayed_job -i server stop && bin/delayed_job -i server --queue=analyses,bac
 ```bash
 # Foreground - one terminal for each command
 QUEUES=background,analyses bundle exec rake environment resque:work
-COUNT=4 QUEUES=simulations bundle exec rake environment resque:workers
+QUEUES=analysis_wrappers bundle exec rake environment resque:work
+COUNT=2 QUEUES=simulations bundle exec rake environment resque:workers
 ```
 
+### Running Simulations for development in the foreground
+
+OpenStudio Server now runs the simulations through the OpenStudio CLI. In order for this to work on local development,
+the gems need to be installed in the OpenStudio installation directory. Run the following for OSX:
+
+```bash
+cd /Applications/OpenStudio-x.y.z/Ruby
+bundle install --path ./gems
+```
 
 ## Starting Rserve for development in the foreground
 
@@ -55,7 +66,7 @@ libraries already installed.
 
 ```bash
 # from OpenStudio-server root directory
-mkdir -p worker-nodes
+mkdir -p worker-nodes/server/R
 cd worker-nodes
 docker run -it -v $(pwd):$(pwd) -p 6311:6311 nrel/openstudio-rserve
 ```
@@ -67,21 +78,9 @@ gem install nokogiri -- --use-system-libraries --with-xml2-include=/usr/include/
 gem install libxml-ruby -- --with-xml2-include=/usr/include/libxml2 --with-xml2-lib=/usr/lib/
 ```
 
-# Testing using Docker-compose
-
-```
-docker volume create --name=osdata
-docker-compose -f docker-compose.test.yml build
-docker-compose -f docker-compose.test.yml up
-
-# One line
-docker-compose rm -f && docker-compose -f docker-compose.test.yml build && docker-compose -f docker-compose.test.yml up
-```
-
 # Testing
 
-If running the tests on a local machine, then make sure to install
-geckodriver to run the webpage.
+If running the tests on a local machine, then make sure to install geckodriver to run the webpage.
 
 ```
 bundle install
@@ -106,31 +105,3 @@ publishing scripts are run on TravisCI. These are only run the develop and maste
 * Write tests for each analysis (expand existing SPEA test)
 * Add CLI path to config.yml
 * Add tests for embedded files on analysis model. Test result of R code that pushed to analysis model (i.e. best_point.json)
-
-# AWS Elastic Container Service
-
-It is possible to use Amazon's Elastic Container Service but it will
-be limited to only running one machine and it is not possible to add
-more worker nodes. The preferred approach is to use docker-machine and 
-docker-swarm or to custom deploy.
-
-```
-ecs-cli configure --cluster openstudio
-ecs-cli up --keypair <key-pair-name> --capability-iam --size 1 --instance-type t2.medium --port 8080
-ecs-cli compose -f docker-compose.deploy.yml up
-# Get the IP address from the console `ecs-cli ps`
-ecs-cli down --force
-```
-
-# Docker-Machine
-
-## AWS
-
-The easiest approach to using Docker-Machine is to export your keys as
-environment variables.
-
-```
-export $AWS_ACCESS_KEY_ID=<your-access-key>
-export $AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
-```
-

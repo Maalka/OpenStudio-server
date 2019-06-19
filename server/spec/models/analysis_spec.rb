@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -45,19 +45,19 @@ RSpec.describe Analysis, type: :model do
     @analysis = @project.analyses.first
   end
 
-  it 'should have one analysis' do
+  after do
+    # @analysis.destroy
+  end
+
+  it 'has one analysis' do
     expect(@project.analyses.size).to eq 1
   end
 
-  it 'should have one project' do
+  it 'has one project' do
     expect(@analysis.project).not_to be_nil
   end
 
-  it 'should have uuid and id the same' do
+  it 'has uuid and id the same' do
     expect(@analysis.id).to eq(@analysis.uuid)
-  end
-
-  after :each do
-    # @analysis.destroy
   end
 end

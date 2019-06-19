@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -67,6 +67,7 @@ module AnalysisLibrary::R
       if var.map_discrete_hash_to_array.nil? || var.discrete_values_and_weights.empty?
         raise 'no hash values and weight passed'
       end
+
       values, weights = var.map_discrete_hash_to_array
 
       dataframe = { 'data' => probabilities_array }.to_dataframe
@@ -193,6 +194,7 @@ module AnalysisLibrary::R
           if var.map_discrete_hash_to_array.nil? || var.discrete_values_and_weights.empty?
             raise 'no hash values and weight passed'
           end
+
           values, weights = var.map_discrete_hash_to_array
           logger.info("values is #{values}")
           variable_samples = values

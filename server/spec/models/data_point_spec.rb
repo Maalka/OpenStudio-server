@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 require 'rails_helper'
 
 RSpec.describe DataPoint, type: :model do
-  before :each do
+  before do
     Project.destroy_all
     FactoryBot.create(:project_with_analyses).analyses
 
@@ -45,14 +45,14 @@ RSpec.describe DataPoint, type: :model do
     @data_point = @analysis.data_points.first
   end
 
-  it 'should have an analysis' do
+  after do
+  end
+
+  it 'has an analysis' do
     expect(@project.analyses).not_to be_nil
   end
 
-  it 'should have uuid and id the same' do
+  it 'has uuid and id the same' do
     expect(@data_point.id).to eq @data_point.uuid
-  end
-
-  after :each do
   end
 end

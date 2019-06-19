@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,12 @@ RSpec.describe 'Pages Exist', type: :feature do
 
     expect(response).to be_success
     expect(json['status']['awake']).not_to be_nil
+  end
+
+  it 'Admin page' do
+    visit '/admin'
+    expect(page).to have_content 'Version of OpenStudio'
+    expect(page).not_to have_content 'Error'
   end
 
   it 'Accesses the API over host using selenium', js: true, depends_gecko: true do

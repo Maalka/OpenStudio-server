@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ RSpec.describe PreflightImage, type: :model do
     @analysis = @project.analyses.first
   end
 
-  it 'should add a variable and preflight image' do
+  it 'adds a variable and preflight image' do
     # create a measure to us in the analysis
     new_measure = Measure.new(analysis_id: @analysis.id)
     new_measure.save!

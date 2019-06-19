@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -33,35 +33,33 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
-#Monte Carlo Estimation of Sobol’ Indices 
+# Monte Carlo Estimation of Sobol’ Indices
 class AnalysisLibrary::Sobol < AnalysisLibrary::Base
   include AnalysisLibrary::R::Core
 
   def initialize(analysis_id, analysis_job_id, options = {})
     defaults = ActiveSupport::HashWithIndifferentAccess.new(
-        {
-            skip_init: false,
-            run_data_point_filename: 'run_openstudio_workflow.rb',
-            create_data_point_filename: 'create_data_point.rb',
-            output_variables: [],
-            problem: {
-                algorithm: {
-                    number_of_samples: 30,
-                    random_seed: 1979,
-                    random_seed2: 1973,
-                    order: 1,
-                    nboot: 0,
-                    conf: 0.95,
-                    type: 'sobol',
-                    norm_type: 'minkowski',
-                    p_power: 2,
-                    debug_messages: 0,
-                    failed_f_value: 1e18,
-                    objective_functions: [],
-                    seed: nil
-                }
-            }
+      skip_init: false,
+      run_data_point_filename: 'run_openstudio_workflow.rb',
+      create_data_point_filename: 'create_data_point.rb',
+      output_variables: [],
+      problem: {
+        algorithm: {
+          number_of_samples: 30,
+          random_seed: 1979,
+          random_seed2: 1973,
+          order: 1,
+          nboot: 0,
+          conf: 0.95,
+          type: 'sobol',
+          norm_type: 'minkowski',
+          p_power: 2,
+          debug_messages: 0,
+          failed_f_value: 1e18,
+          objective_functions: [],
+          seed: nil
         }
+      }
     )
     @options = defaults.deep_merge(options)
 
@@ -107,7 +105,7 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
       master_ip = 'localhost'
 
       logger.info("Master ip: #{master_ip}")
-      logger.info('Starting GENOUD Run')
+      logger.info('Starting SOBOL Run')
 
       # Quick preflight check that R, MongoDB, and Rails are working as expected. Checks to make sure
       # that the run flag is true.
@@ -121,15 +119,6 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
         raise 'Value for conf was not set or equal to zero (must be 1 or greater)'
       end
 
-      # TODO: add test for not "minkowski", "maximum", "euclidean", "binary", "manhattan"
-      # if @analysis.problem['algorithm']['norm_type'] != "minkowski", "maximum", "euclidean", "binary", "manhattan"
-      #  raise "P Norm must be non-negative"
-      # end
-
-      if @analysis.problem['algorithm']['p_power'] <= 0
-        raise 'P Norm must be non-negative'
-      end
-
       if @analysis.problem['algorithm']['number_of_samples'].nil? || (@analysis.problem['algorithm']['number_of_samples']).zero?
         raise 'Must have number of samples to discretize the parameter space'
       end
@@ -137,10 +126,25 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
       @analysis.problem['algorithm']['objective_functions'] = [] unless @analysis.problem['algorithm']['objective_functions']
       @analysis.save!
 
+      objtrue = @analysis.output_variables.select { |v| v['objective_function'] == true }
+      ug = objtrue.uniq { |v| v['objective_function_group'] }
+      logger.info "Number of objective function groups are #{ug.size}"
+      obj_names = []
+      ug.each do |var|
+        obj_names << var['display_name_short']
+      end
+      logger.info "Objective function names #{obj_names}"
+
       pivot_array = Variable.pivot_array(@analysis.id, @r)
       logger.info "pivot_array: #{pivot_array}"
       selected_variables = Variable.variables(@analysis.id)
       logger.info "Found #{selected_variables.count} variables to perturb"
+
+      var_display_names = []
+      selected_variables.each do |var|
+        var_display_names << var.display_name_short
+      end
+      logger.info "Variable display names #{var_display_names}"
 
       # discretize the variables using the LHS sampling method
       @r.converse("print('starting lhs to get min/max')")
@@ -182,7 +186,7 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
       worker_ips = {}
       if @analysis.problem['algorithm']['max_queued_jobs']
         if @analysis.problem['algorithm']['max_queued_jobs'] == 0
-          logger.info "MAX_QUEUED_JOBS is 0"
+          logger.info 'MAX_QUEUED_JOBS is 0'
           raise 'MAX_QUEUED_JOBS is 0'
         elsif @analysis.problem['algorithm']['max_queued_jobs'] > 0
           worker_ips[:worker_ips] = ['localhost'] * @analysis.problem['algorithm']['max_queued_jobs']
@@ -217,7 +221,9 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
                    ppower: @analysis.problem['algorithm']['p_power'],
                    objfun: @analysis.problem['algorithm']['objective_functions'],
                    debug_messages: @analysis.problem['algorithm']['debug_messages'],
-                   failed_f: @analysis.problem['algorithm']['failed_f_value']) do
+                   failed_f: @analysis.problem['algorithm']['failed_f_value'],
+                   vardisplaynames: var_display_names, objnames: obj_names,
+                   uniquegroups: ug.size) do
           %{
             rails_analysis_id = "#{@analysis.id}"
             rails_sim_root_path = "#{APP_CONFIG['sim_root_path']}"
@@ -234,11 +240,9 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
           }
         end
         logger.info 'Returned from rserve sobol block'
-        # TODO: find any results of the algorithm and save to the analysis
       else
         raise 'could not start the cluster (most likely timed out)'
       end
-
     rescue StandardError, ScriptError, NoMemoryError => e
       log_message = "#{__FILE__} failed with #{e.message}, #{e.backtrace.join("\n")}"
       logger.error log_message
@@ -269,7 +273,7 @@ class AnalysisLibrary::Sobol < AnalysisLibrary::Base
           @analysis.results[@options[:analysis_type]]['best_result'] = temp
           @analysis.save!
           logger.info("analysis: #{@analysis.results}")
-        rescue => e
+        rescue StandardError => e
           logger.error 'Could not save post processed results for bestresult.json into the database'
         end
       end

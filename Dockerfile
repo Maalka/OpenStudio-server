@@ -3,11 +3,10 @@
 # TO_BUILD_AND_RUN: docker-compose up
 # NOTES:            Currently this is one big dockerfile and non-optimal.
 
-ARG OPENSTUDIO_VERSION=2.6.0
+#may include suffix
+ARG OPENSTUDIO_VERSION
 FROM nrel/openstudio:$OPENSTUDIO_VERSION as base
 MAINTAINER Nicholas Long nicholas.long@nrel.gov
-
-RUN ruby -r openstudio -e "require 'openstudio'; puts OpenStudio.openStudioLongVersion"
 
 # Install required libaries.
 #   realpath - needed for wait-for-it
@@ -35,7 +34,6 @@ RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 &
         libgdbm-dev \
         libglib2.0-dev \
         libglu1 \
-        libgsl0ldbl \
         libgsl0-dev \
         libncurses-dev \
         libreadline-dev \
@@ -85,7 +83,7 @@ ENV RAILS_ENV $rails_env
 ADD /bin /opt/openstudio/bin
 ADD /server/Gemfile /opt/openstudio/server/Gemfile
 WORKDIR /opt/openstudio/server
-RUN bundle install --jobs=3 --retry=3 $bundle_args
+RUN bundle _${OS_BUNDLER_VERSION}_ install --jobs=3 --retry=3 $bundle_args
 
 # Add the app assets and precompile assets. Do it this way so that when the app changes the assets don't
 # have to be recompiled everytime

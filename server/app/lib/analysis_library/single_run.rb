@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -41,20 +41,18 @@ class AnalysisLibrary::SingleRun < AnalysisLibrary::Base
     #   preference is objects in the database, objects passed via options, then the defaults below.
     #   Parameters posted in the API become the options hash that is passed into this initializer.
     defaults = ActiveSupport::HashWithIndifferentAccess.new(
-        {
-            skip_init: false,
-            run_data_point_filename: 'run_openstudio_workflow.rb',
-            problem: {
-                algorithm: {
-                    number_of_samples: 1,
-                    sample_method: 'all_variables',
-                    debug_messages: 0,
-                    failed_f_value: 1e18,
-                    objective_functions: [],
-                    seed: nil
-                }
-            }
+      skip_init: false,
+      run_data_point_filename: 'run_openstudio_workflow.rb',
+      problem: {
+        algorithm: {
+          number_of_samples: 1,
+          sample_method: 'all_variables',
+          debug_messages: 0,
+          failed_f_value: 1e18,
+          objective_functions: [],
+          seed: nil
         }
+      }
     )
     @options = defaults.deep_merge(options)
 
@@ -74,12 +72,6 @@ class AnalysisLibrary::SingleRun < AnalysisLibrary::Base
     @analysis.reload
 
     logger.info "Initializing analysis for #{@analysis.name} with UUID of #{@analysis.uuid}"
-
-    # make this a core method
-    if !@analysis.problem['algorithm']['seed'].nil? && (@analysis.problem['algorithm']['seed'].is_a? Numeric)
-      logger.info "Setting R base random seed to #{@analysis.problem['algorithm']['seed']}"
-      @r.converse("set.seed(#{@analysis.problem['algorithm']['seed']})")
-    end
 
     selected_variables = Variable.pivots(@analysis.id) + Variable.variables(@analysis.id)
     logger.info "Found #{selected_variables.count} variables to perturb"
@@ -126,7 +118,7 @@ class AnalysisLibrary::SingleRun < AnalysisLibrary::Base
     dp.save!
 
     # This is here mainly for testing, but feel free to really use it.
-    @analysis.results[@options[:analysis_type]] = {last_message: 'completed successfully'}
+    @analysis.results[@options[:analysis_type]] = { last_message: 'completed successfully' }
     @analysis.save!
 
     # Only set this data if the analysis was NOT called from another analysis

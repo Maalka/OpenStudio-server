@@ -1,7 +1,11 @@
 .git
+.bundle
 .idea
 vagrant
-/server/.bundle/
+/doc
+/gems
+/server/gems
+/server/.bundle
 /server/Gemfile.lock
 /server/log
 /server/public/assets
@@ -9,5 +13,5 @@ vagrant
 /server/spec/runs.txt
 /server/spec/files/tmp/
 /server/spec/files/test_model/tmp_run_single
-/spec/unit-test
+/spec
 /worker-nodes

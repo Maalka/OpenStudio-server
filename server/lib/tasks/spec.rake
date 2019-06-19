@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,13 +40,13 @@ if defined?(RSpec)
     RSpec::Core::RakeTask.new(:unit) do |t|
       puts 'Running tests'
       t.pattern = Dir['spec/*/**/*_spec.rb'].reject { |f| f['/api/v1'] || f['/integration'] }
-      t.rspec_opts = %w(--format CI::Reporter::RSpec)
+      t.rspec_opts = ['--format', 'CI::Reporter::RSpec']
     end
 
     RSpec::Core::RakeTask.new(:integration) do |t|
       puts 'Running only the integration tests...'
       t.pattern = 'spec/integration/**/*_spec.rb'
-      t.rspec_opts = %w(--format CI::Reporter::RSpec)
+      t.rspec_opts = ['--format', 'CI::Reporter::RSpec']
     end
   end
 end

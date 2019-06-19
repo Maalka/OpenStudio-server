@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -49,12 +49,13 @@ class DataPoint
 
   field :status, type: String, default: 'na' # The available states are [:na, :queued, :started, :completed]
   field :status_message, type: String, default: '' # results of the simulation [:completed normal, :datapoint failure]
-  field :job_id, type: String  # The job_id that is being tracked in Resque/Delayed Job
+  field :job_id, type: String # The job_id that is being tracked in Resque/Delayed Job
   field :results, type: Hash, default: {}
   field :run_queue_time, type: DateTime, default: nil
   field :run_start_time, type: DateTime, default: nil
   field :run_end_time, type: DateTime, default: nil
   field :sdp_log_file, type: Array, default: []
+  field :worker_logs, type: Hash, default: {}
 
   # Run location information
   field :ip_address, type: String
@@ -91,10 +92,10 @@ class DataPoint
   # Submit the simulation to run in the background task queue
   def submit_simulation
     if Rails.application.config.job_manager == :delayed_job
-      job = RunSimulateDataPoint.new(id)
+      job = DjJobs::RunSimulateDataPoint.new(id)
       self.job_id = job.delay(queue: 'simulations').perform.id
     elsif Rails.application.config.job_manager == :resque
-      Resque.enqueue(RunSimulateDataPointResque, id)
+      Resque.enqueue(ResqueJobs::RunSimulateDataPoint, id)
       self.job_id = id
     else
       raise 'Rails.application.config.job_manager must be set to :resque or :delayed_job'
@@ -137,11 +138,17 @@ class DataPoint
   end
 
   def set_canceled_state
-    self.destroy_background_job # Remove the datapoint from the delayed jobs queue
+    destroy_background_job # destroy queued job
     self.run_start_time ||= Time.now
     self.run_end_time = Time.now
     self.status = :completed
     self.status_message = 'datapoint canceled'
+    save!
+  end
+
+  def set_queued_state
+    self.status = :queued
+    self.run_queue_time = Time.now
     save!
   end
 
@@ -160,7 +167,7 @@ class DataPoint
       end
     elsif Rails.application.config.job_manager == :resque
       if job_id
-        Resque::Job.destroy(:simulations, 'RunSimulateDataPointResque', job_id)
+        Resque::Job.destroy(:simulations, 'ResqueJobs::RunSimulateDataPoint', job_id)
       end
     else
       raise 'Rails.application.config.job_manager must be set to :resque or :delayed_job'

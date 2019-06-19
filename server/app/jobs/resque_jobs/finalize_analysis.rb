@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -32,12 +32,16 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
+# Runs on web node
+module ResqueJobs
+  class FinalizeAnalysis
+    @queue = :analysis_wrappers
 
-class DeleteAnalysisJobResque
-  @queue = :background
-
-  def self.perform(analysis_directory)
-    job = DeleteAnalysisJob.new(analysis_directory)
-    job.perform
+    def self.perform(analysis_id, options = {})
+      # TODO: error handling and logging around looking up analysis
+      analysis = Analysis.find(analysis_id)
+      # TODO: check status of analysis for successful complete:  analysis.status == 'completed'
+      analysis.run_finalization
+    end
   end
 end

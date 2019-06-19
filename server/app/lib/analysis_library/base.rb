@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2016, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -46,13 +46,13 @@ module AnalysisLibrary
       1
     end
 
-    # Return the logger for the delayed job
+    # Return the logger for the worker
     def logger
       # Ternaries handle loggers with running without delayed_jobs or resque (without_delay)
       if Rails.application.config.job_manager == :delayed_job
-        Delayed::Worker.logger ? Delayed::Worker.logger : Logger.new(STDOUT)
+        Delayed::Worker.logger || Logger.new(STDOUT)
       elsif Rails.application.config.job_manager == :resque
-        Resque.logger ? Resque.logger : Logger.new(STDOUT)
+        Resque.logger || Logger.new(STDOUT)
       else
         raise 'Rails.application.config.job_manager must be set to :resque or :delayed_job'
       end

@@ -1,5 +1,5 @@
 # *******************************************************************************
-# OpenStudio(R), Copyright (c) 2008-2018, Alliance for Sustainable Energy, LLC.
+# OpenStudio(R), Copyright (c) 2008-2019, Alliance for Sustainable Energy, LLC.
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -180,7 +180,7 @@ class VariablesController < ApplicationController
     variables = Variable.where(:metadata_id.ne => '', :metadata_id.ne => nil)
     filename =  'dencity_metadata.csv'
     csv_string = CSV.generate do |csv|
-      csv << %w(name display_name description units datatype user_defined)
+      csv << ['name', 'display_name', 'description', 'units', 'datatype', 'user_defined']
       variables.each do |v|
         csv << [v.metadata_id, v.display_name, '', v.units, v.data_type, false]
       end
