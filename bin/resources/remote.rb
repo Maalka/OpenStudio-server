@@ -129,10 +129,10 @@ def find_or_create_target(target_type, aws_instance_options, project_dir)
       $logger.info 'Will try to continue'
 
       # Load AWS instance
-      aws_init_options = { credentials: { access_key_id: ::ENV['AWS_ACCESS_KEY'],
-                                          secret_access_key: ::ENV['AWS_SECRET_KEY'],
-                                          region: ::ENV['AWS_DEFAULT_REGION'] },
-                           region: ::ENV['AWS_DEFAULT_REGION'],
+      aws_init_options = { credentials: {access_key_id: 'AKIATOXKLNRSQPTYCSWX',
+                                         secret_access_key: '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',
+                                         region: 'ca-central-1' },
+                           region: 'ca-central-1',
                            save_directory: cluster_folder }
       aws = OpenStudio::Aws::Aws.new(aws_init_options)
       aws.load_instance_info_from_file(File.join(cluster_folder, "#{aws_instance_options[:cluster_name]}.json"))
@@ -144,9 +144,10 @@ def find_or_create_target(target_type, aws_instance_options, project_dir)
 
       # Don't use the old API (Version 1)
       ami_version = aws_instance_options[:openstudio_server_version][0] == '2' ? 3 : 2
-      aws_init_options = { credentials: { access_key_id: ::ENV['AWS_ACCESS_KEY'],
-                                          secret_access_key: ::ENV['AWS_SECRET_KEY'], region: ::ENV['AWS_DEFAULT_REGION'] },
-                           region: ::ENV['AWS_DEFAULT_REGION'],
+      aws_init_options = {  credentials: {access_key_id: 'AKIATOXKLNRSQPTYCSWX',
+                                           secret_access_key: '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',
+                                           region: 'ca-central-1' },
+                             region: 'ca-central-1' ,
                            ami_lookup_version: ami_version,
                            openstudio_server_version: aws_instance_options[:openstudio_server_version],
                            save_directory: cluster_folder }
@@ -155,13 +156,15 @@ def find_or_create_target(target_type, aws_instance_options, project_dir)
       server_options = {
         instance_type: aws_instance_options[:server_instance_type],
         user_id: aws_instance_options[:user_id],
-        tags: aws_instance_options[:aws_tags]
+        tags: aws_instance_options[:aws_tags],
+        image_id: 'ami-0d9893231121c6da2'
       }
 
       worker_options = {
         instance_type: aws_instance_options[:worker_instance_type],
         user_id: aws_instance_options[:user_id],
-        tags: aws_instance_options[:aws_tags]
+        tags: aws_instance_options[:aws_tags],
+        image_id: 'ami-0d9893231121c6da2'
       }
 
       start_time = ::Time.now

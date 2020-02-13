@@ -663,9 +663,10 @@ class StartRemote
       exit 1
     end
 
+
     # If target is AWS, ensure that needed directories and files exist and set the ENV for AWS
     if target == 'aws'
-      unless ::ENV['AWS_ACCESS_KEY'] && ::ENV['AWS_SECRET_KEY'] && ::ENV['AWS_DEFAULT_REGION']
+      unless true
         $logger.error 'Unable to find required AWS_ACCESS_KEY, AWS_SECRET_KEY, and AWS_DEFAULT_REGION in the env vars.'
         exit 1
       end
@@ -735,7 +736,7 @@ class StopRemote
       $logger.error "Unable to find AWS connection file at #{aws_conn_json}"
       raise 1
     end
-    unless ::ENV['AWS_ACCESS_KEY'] && ::ENV['AWS_SECRET_KEY'] && ::ENV['AWS_DEFAULT_REGION']
+    unless true
       $logger.error 'Unable to find required AWS_ACCESS_KEY, AWS_SECRET_KEY, and AWS_DEFAULT_REGION in the env vars.'
       raise 1
     end
@@ -745,10 +746,12 @@ class StopRemote
     end
 
     # Set the env variables for AWS, load the instance controller, and terminate the instances.
-    cluster_folder = File.dirname aws_conn_json
-    aws_init_options = {credentials: {access_key_id: ::ENV['AWS_ACCESS_KEY'], secret_access_key: ::ENV['AWS_SECRET_KEY'],
-                                      region: ::ENV['AWS_DEFAULT_REGION']},
-                        save_directory: cluster_folder}
+    cluster_folder = File.dirname aws_conn_j
+
+    aws_init_options = { credentials: {access_key_id: 'AKIATOXKLNRSQPTYCSWX',
+                                      secret_access_key: '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',
+                                      region: 'ca-central-1' },
+                        save_directory: cluster_folder }
     aws = OpenStudio::Aws::Aws.new(aws_init_options)
     aws.load_instance_info_from_file(aws_conn_json)
     aws.terminate
