@@ -36,6 +36,15 @@ docker-test:
   rserve_hostname: 'rserve'
   ruby_bin_dir: /usr/local/ruby
 
+kubernetes:
+  <<: *defaults
+  os_server_host_url: <%= ENV['OS_SERVER_HOST_URL'] %>
+  os_server_project_path: '/mnt/openstudio'
+  r_scripts_path: /opt/openstudio/R/lib
+  rserve_hostname: <%= ENV['RSERVE_HOSTNAME'] %>
+  ruby_bin_dir: /usr/local/ruby
+
+
 test:
   <<: *defaults
 

@@ -39,6 +39,16 @@ docker-test:
   options:
     raise_not_found_error: false
     log_level: :info
+kubernetes:
+  clients:
+    default:
+      database: <%= ENV['OS_SERVER_DATABASE_NAME'] %>
+      hosts:
+        - <%= ENV['OS_SERVER_MONGO_HOST'] %>:<%= ENV['OS_SERVER_MONGO_PORT'] %>
+      options:
+  options:
+    raise_not_found_error: false
+    log_level: :info    
 production:
   clients:
     default:

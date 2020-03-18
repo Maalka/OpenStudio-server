@@ -58,7 +58,8 @@ RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA
 ENV PASSENGER_VERSION 5.0.25
 # Install Rack. Silly workaround for not having ruby 2.2.2. Rack 1.6.4 is the
 # latest for Ruby <= 2.0
-RUN gem install rack -v=1.6.4
+RUN gem install rack -v=2.1.2
+RUN ruby -v
 RUN gem install passenger -v $PASSENGER_VERSION
 RUN passenger-install-nginx-module
 

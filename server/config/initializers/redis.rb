@@ -40,6 +40,10 @@ elsif Rails.env.production?
   require 'resque'
   uri = URI.parse(ENV['REDIS_URL'])
   Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+elsif Rails.env.kubernetes?
+  require 'resque'
+  uri = URI.parse(ENV['REDIS_URL'])
+  Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 elsif ['development', 'test'].include? Rails.env
   require 'resque'
   Resque.redis = 'localhost:6379'
